@@ -6,19 +6,19 @@ source vars.sh
 # Start from a clean slate
 rm -rf .terraform
 
-terraform init \
+saml2aws exec 'terraform init \
     -backend=true \
     -backend-config key="${TF_STATE_OBJECT_KEY}" \
     -backend-config bucket="${TF_STATE_BUCKET}" \
-    -backend-config dynamodb_table="${TF_LOCK_DB}"
+    -backend-config dynamodb_table="${TF_LOCK_DB}" '
 
-terraform plan \
+saml2aws exec 'terraform plan \
     -lock=false \
     -input=false \
-    -out=tf.plan
+    -out=tf.plan '
 
-terraform apply \
+saml2aws exec 'terraform apply \
     -input=false \
     -auto-approve=true \
     -lock=true \
-    tf.plan
+    tf.plan '
