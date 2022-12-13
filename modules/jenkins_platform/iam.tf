@@ -1,5 +1,5 @@
 // EFS 
-data "aws_iam_policy_document" efs_resource_policy {
+data "aws_iam_policy_document" "efs_resource_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -13,9 +13,9 @@ data "aws_iam_policy_document" efs_resource_policy {
       identifiers = ["arn:aws:iam::${local.account_id}:root"]
     }
 
-   resources = [
-     "arn:aws:elasticfilesystem:${local.region}:${local.account_id}:file-system/${aws_efs_file_system.this.id}"
-   ]
+    resources = [
+      "arn:aws:elasticfilesystem:${local.region}:${local.account_id}:file-system/${aws_efs_file_system.this.id}"
+    ]
 
     condition {
       test     = "Bool"
@@ -26,30 +26,30 @@ data "aws_iam_policy_document" efs_resource_policy {
 }
 
 
-resource "aws_efs_file_system_policy" this {
+resource "aws_efs_file_system_policy" "this" {
   file_system_id = aws_efs_file_system.this.id
   policy         = data.aws_iam_policy_document.efs_resource_policy.json
 }
 
 // ECR
-data "aws_iam_policy_document" ecr_resource_policy {
+data "aws_iam_policy_document" "ecr_resource_policy" {
   statement {
     effect = "Allow"
     actions = [
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:PutImage",
-                "ecr:InitiateLayerUpload",
-                "ecr:UploadLayerPart",
-                "ecr:CompleteLayerUpload",
-                "ecr:DescribeRepositories",
-                "ecr:GetRepositoryPolicy",
-                "ecr:ListImages",
-                "ecr:DeleteRepository",
-                "ecr:BatchDeleteImage",
-                "ecr:SetRepositoryPolicy",
-                "ecr:DeleteRepositoryPolicy"
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload",
+      "ecr:DescribeRepositories",
+      "ecr:GetRepositoryPolicy",
+      "ecr:ListImages",
+      "ecr:DeleteRepository",
+      "ecr:BatchDeleteImage",
+      "ecr:SetRepositoryPolicy",
+      "ecr:DeleteRepositoryPolicy"
     ]
     principals {
       type        = "AWS"
@@ -80,14 +80,14 @@ data "aws_iam_policy_document" "aws_backup_assume_policy" {
   }
 }
 
-resource "aws_iam_role" aws_backup_role {
+resource "aws_iam_role" "aws_backup_role" {
   count = var.efs_enable_backup ? 1 : 0
 
   name               = "${var.name_prefix}-backup-role"
   assume_role_policy = data.aws_iam_policy_document.aws_backup_assume_policy[count.index].json
 }
 
-resource "aws_iam_role_policy_attachment" backup_role_policy {
+resource "aws_iam_role_policy_attachment" "backup_role_policy" {
   count = var.efs_enable_backup ? 1 : 0
 
   role       = aws_iam_role.aws_backup_role[count.index].id
@@ -96,7 +96,7 @@ resource "aws_iam_role_policy_attachment" backup_role_policy {
 
 
 // Jenkins
-data "aws_iam_policy_document" ecs_assume_policy {
+data "aws_iam_policy_document" "ecs_assume_policy" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
@@ -108,7 +108,7 @@ data "aws_iam_policy_document" ecs_assume_policy {
   }
 }
 
-data "aws_iam_policy_document" ecs_execution_policy {
+data "aws_iam_policy_document" "ecs_execution_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -124,23 +124,23 @@ data "aws_iam_policy_document" ecs_execution_policy {
   }
 }
 
-resource "aws_iam_role" ecs_execution_role {
+resource "aws_iam_role" "ecs_execution_role" {
   name               = "${var.name_prefix}-ecs-execution-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_policy.json
   tags               = var.tags
 }
 
-resource "aws_iam_policy" ecs_execution_policy {
+resource "aws_iam_policy" "ecs_execution_policy" {
   name   = "${var.name_prefix}-ecs-execution-policy"
   policy = data.aws_iam_policy_document.ecs_execution_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" ecs_execution {
+resource "aws_iam_role_policy_attachment" "ecs_execution" {
   role       = aws_iam_role.ecs_execution_role.name
   policy_arn = aws_iam_policy.ecs_execution_policy.arn
 }
 
-data "aws_iam_policy_document" jenkins_controller_task_policy {
+data "aws_iam_policy_document" "jenkins_controller_task_policy" {
   statement {
     effect = "Allow"
     actions = [
@@ -157,8 +157,8 @@ data "aws_iam_policy_document" jenkins_controller_task_policy {
       test     = "ArnEquals"
       variable = "ecs:cluster"
       values = [
-          aws_ecs_cluster.jenkins_controller.arn,
-          aws_ecs_cluster.jenkins_agents.arn
+        aws_ecs_cluster.jenkins_controller.arn,
+        aws_ecs_cluster.jenkins_agents.arn
       ]
     }
     resources = ["arn:aws:ecs:${local.region}:${local.account_id}:task-definition/*"]
@@ -173,8 +173,8 @@ data "aws_iam_policy_document" jenkins_controller_task_policy {
       test     = "ArnEquals"
       variable = "ecs:cluster"
       values = [
-          aws_ecs_cluster.jenkins_controller.arn,
-          aws_ecs_cluster.jenkins_agents.arn
+        aws_ecs_cluster.jenkins_controller.arn,
+        aws_ecs_cluster.jenkins_agents.arn
       ]
     }
     resources = ["arn:aws:ecs:${local.region}:${local.account_id}:task/*"]
@@ -239,18 +239,18 @@ data "aws_iam_policy_document" jenkins_controller_task_policy {
   }
 }
 
-resource "aws_iam_policy" jenkins_controller_task_policy {
+resource "aws_iam_policy" "jenkins_controller_task_policy" {
   name   = "${var.name_prefix}-controller-task-policy"
   policy = data.aws_iam_policy_document.jenkins_controller_task_policy.json
 }
 
-resource "aws_iam_role" jenkins_controller_task_role {
+resource "aws_iam_role" "jenkins_controller_task_role" {
   name               = "${var.name_prefix}-controller-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_assume_policy.json
   tags               = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" jenkins_controller_task {
+resource "aws_iam_role_policy_attachment" "jenkins_controller_task" {
   role       = aws_iam_role.jenkins_controller_task_role.name
   policy_arn = aws_iam_policy.jenkins_controller_task_policy.arn
 }
@@ -266,7 +266,7 @@ data "aws_iam_policy_document" "cloudwatch" {
     ]
     effect = "Allow"
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = ["arn:aws:iam::${local.account_id}:root"]
     }
     resources = ["*"]
@@ -282,7 +282,7 @@ data "aws_iam_policy_document" "cloudwatch" {
     ]
     effect = "Allow"
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["logs.${local.region}.amazonaws.com"]
     }
     resources = ["*"]

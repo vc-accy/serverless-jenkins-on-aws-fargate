@@ -1,5 +1,5 @@
 // EFS including backups
-resource "aws_efs_file_system" this {
+resource "aws_efs_file_system" "this" {
   creation_token = "${var.name_prefix}-fs"
 
   encrypted                       = var.efs_enable_encryption
@@ -18,7 +18,7 @@ resource "aws_efs_file_system" this {
   tags = var.tags
 }
 
-resource "aws_efs_access_point" this {
+resource "aws_efs_access_point" "this" {
   file_system_id = aws_efs_file_system.this.id
 
   posix_user {
@@ -38,7 +38,7 @@ resource "aws_efs_access_point" this {
 }
 
 
-resource "aws_efs_mount_target" this {
+resource "aws_efs_mount_target" "this" {
   // This doesn't work if the VPC is being created where this module is called. Needs work
   for_each = { for subnet in var.efs_subnet_ids : subnet => true }
 
@@ -48,7 +48,7 @@ resource "aws_efs_mount_target" this {
 }
 
 
-resource "aws_backup_plan" this {
+resource "aws_backup_plan" "this" {
   count = var.efs_enable_backup ? 1 : 0
 
   name = "${var.name_prefix}-plan"
@@ -71,14 +71,14 @@ resource "aws_backup_plan" this {
   tags = var.tags
 }
 
-resource "aws_backup_vault" this {
+resource "aws_backup_vault" "this" {
   count = var.efs_enable_backup ? 1 : 0
 
   name = "${var.name_prefix}-vault"
   tags = var.tags
 }
 
-resource "aws_backup_selection" this {
+resource "aws_backup_selection" "this" {
   count = var.efs_enable_backup ? 1 : 0
 
   name         = "${var.name_prefix}-selection"

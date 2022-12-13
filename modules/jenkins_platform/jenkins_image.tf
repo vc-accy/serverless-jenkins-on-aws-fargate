@@ -6,36 +6,36 @@ locals {
 
 
 resource "aws_ecr_repository" "jenkins_controller" {
-  name                 =  var.jenkins_ecr_repository_name
+  name                 = var.jenkins_ecr_repository_name
   image_tag_mutability = "MUTABLE"
 
-  image_scanning_configuration  {
-      scan_on_push = true
+  image_scanning_configuration {
+    scan_on_push = true
   }
 
 }
 
-data "template_file" jenkins_configuration_def {
+data "template_file" "jenkins_configuration_def" {
 
   template = file("${path.module}/docker/files/jenkins.yaml.tpl")
-  
+
 
   vars = {
-    ecs_cluster_fargate       = aws_ecs_cluster.jenkins_controller.arn
-    ecs_cluster_fargate_spot  = aws_ecs_cluster.jenkins_agents.arn
-    cluster_region            = local.region
-    jenkins_cloud_map_name    = "controller.${var.name_prefix}"
-    jenkins_controller_port       = var.jenkins_controller_port
-    jnlp_port                 = var.jenkins_jnlp_port
-    agent_security_groups     = aws_security_group.jenkins_controller_security_group.id
-    execution_role_arn        = aws_iam_role.ecs_execution_role.arn
-    subnets                   = join(",", var.jenkins_controller_subnet_ids)
+    ecs_cluster_fargate      = aws_ecs_cluster.jenkins_controller.arn
+    ecs_cluster_fargate_spot = aws_ecs_cluster.jenkins_agents.arn
+    cluster_region           = local.region
+    jenkins_cloud_map_name   = "controller.${var.name_prefix}"
+    jenkins_controller_port  = var.jenkins_controller_port
+    jnlp_port                = var.jenkins_jnlp_port
+    agent_security_groups    = aws_security_group.jenkins_controller_security_group.id
+    execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+    subnets                  = join(",", var.jenkins_controller_subnet_ids)
   }
 }
 
 resource "null_resource" "render_template" {
   triggers = {
-    src_hash = file("${path.module}/docker/files/jenkins.yaml.tpl")
+    src_hash   = file("${path.module}/docker/files/jenkins.yaml.tpl")
     always_run = timestamp()
   }
   depends_on = [data.template_file.jenkins_configuration_def]
@@ -50,7 +50,7 @@ EOF
 
 resource "null_resource" "build_docker_image" {
   triggers = {
-    src_hash = file("${path.module}/docker/files/jenkins.yaml.tpl")
+    src_hash   = file("${path.module}/docker/files/jenkins.yaml.tpl")
     always_run = timestamp()
   }
   depends_on = [null_resource.render_template]
