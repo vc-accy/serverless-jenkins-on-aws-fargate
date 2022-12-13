@@ -60,6 +60,7 @@ resource "aws_ssm_parameter" "jenkins-pwd" {
   name  = "jenkins-pwd"
   type  = "SecureString"
   value = "ecuser"
+  overwrite = true
 }
 
 module "s3_bucket" {
