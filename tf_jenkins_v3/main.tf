@@ -40,12 +40,13 @@ module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "~> 4.0"
 
-  domain_name = "my-domain.com"
-  zone_id     = "Z2ES7B9AZ6SHAE"
+  domain_name = "pipline.site"
+  zone_id     = "Z006005948DXAA1KI3M4"
 
   subject_alternative_names = [
-    "*.my-domain.com",
-    "app.sub.my-domain.com",
+    "*.pipline.site",
+    "test.pipline.site"
+    
   ]
 
   wait_for_validation = false
@@ -76,8 +77,8 @@ module "s3_bucket" {
 module "dynamodb_table" {
   source = "terraform-aws-modules/dynamodb-table/aws"
 
-  name                = "tf-serverless-jenkins-v3-lock-table"
-  hash_key            = "LockID"
+  name     = "tf-serverless-jenkins-v3-lock-table"
+  hash_key = "LockID"
   attributes = [
     {
       name = "LockID"
