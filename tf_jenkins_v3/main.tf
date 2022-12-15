@@ -45,7 +45,8 @@ module "acm" {
 
   subject_alternative_names = [
     "*.pipline.site",
-    "test.pipline.site"
+    "test.pipline.site",
+    "jenkins-controller.pipline.site",
     
   ]
 
