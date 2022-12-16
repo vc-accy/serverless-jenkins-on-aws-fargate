@@ -88,7 +88,7 @@ resource "aws_ecs_service" "jenkins_controller" {
   cluster          = aws_ecs_cluster.jenkins_controller.id
   desired_count    = 1
   launch_type      = "FARGATE"
-  platform_version = "1.3.0"
+  platform_version = "1.4.0"
 
   // Assuming we cannot have more than one instance at a time. Ever. 
   deployment_maximum_percent         = 100

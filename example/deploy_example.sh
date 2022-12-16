@@ -19,13 +19,13 @@ saml2aws exec 'terraform plan \
 
 
 
-saml2aws exec 'terraform apply \
-    -input=false \
-    -auto-approve=true \
-    -lock=false \
-    tf.plan '
-
-#  terraform apply -destroy \
+# saml2aws exec 'terraform apply \
 #     -input=false \
 #     -auto-approve=true \
-#     -lock=false
+#     -lock=false \
+#     tf.plan '
+
+ terraform apply -destroy \
+    -input=false \
+    -auto-approve=true \
+    -lock=false
