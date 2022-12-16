@@ -17,8 +17,15 @@ saml2aws exec 'terraform plan \
     -input=false \
     -out=tf.plan '
 
+
+
 saml2aws exec 'terraform apply \
     -input=false \
     -auto-approve=true \
     -lock=false \
     tf.plan '
+
+#  terraform apply -destroy \
+#     -input=false \
+#     -auto-approve=true \
+#     -lock=false
