@@ -53,7 +53,7 @@ module "acm" {
   wait_for_validation = false
 
   tags = {
-    Name = "my-domain.com"
+    Name = "pipline.site"
   }
 }
 
