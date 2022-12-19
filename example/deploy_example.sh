@@ -28,4 +28,4 @@ saml2aws exec 'terraform plan \
     -input=false \
     -auto-approve=true \
     -lock=false
-    -out=tf.plan
+    
