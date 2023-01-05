@@ -8,6 +8,8 @@ locals {
   tags = {
     team     = "devops"
     solution = "jenkins"
+    FASMException = "1"
+
   }
 }
 
